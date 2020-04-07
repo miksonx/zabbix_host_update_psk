@@ -5,7 +5,7 @@ from zabbix.api import ZabbixAPI
 def check_input():
     if len(sys.argv) < 8:
         print '\nERROR: Missing arguments:'
-        print '\nProper usage ./update_host.py \'https://zabbix_host_api\' \'username\' \'password\' \'host|tempalte\' \'host_name|template_name\' \'psk_agent_identity\' \'psk_key\' \n' 
+        print '\nProper usage ./update_host.py \"https://zabbix_host_api\" \"username\" \"password\" \"host|tempalte|proxy\" \"host_name|template_name|proxy_name\" \"psk_agent_identity\" \"psk_key\" \n' 
         sys.exit(1)  # abort because of error
 
 def list_hosts():
@@ -24,7 +24,10 @@ def list_hosts():
     if zbx_filter == 'template':
         res1 = zapi.do_request('template.get', { 'filter': { 'host': zbx_filter_value }, 'selectHosts': 'extend', 'output': ['hostid','name']})
         hosts = res1.get(u'result')[0].get(u'hosts') 
-    if zbx_filter == 'host' or zbx_filter == 'template':
+    if zbx_filter == 'proxy':
+        res1 = zapi.do_request('proxy.get', { 'filter': { 'host': zbx_filter_value }, 'selectHosts': 'extend', 'output': ['hostid','name']})
+        hosts = res1.get(u'result')[0].get(u'hosts') 
+    if zbx_filter == 'host' or zbx_filter == 'template' or zbx_filter == 'proxy':
         print('Following hosts will be updated:')
         for host in hosts:       
             print(host.get(u'name'))
